@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PACE AI | المنصة الأرطفونية الذكية</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#17324d;--muted:#64748b;--bg:#f3f7f8;--card:#fff;--teal:#087e80;--teal2:#0b696b;--pale:#e6f5f2;--line:#dce6e8;--gold:#f5bb50;--red:#b42318;--success:#10b981}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Tajawal',sans-serif}
+header{background:var(--ink);color:white;padding:18px max(20px,calc((100% - 1100px)/2));display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{font-size:23px;font-weight:900}.brand small{display:block;color:#b6d8d7;font-size:13px;font-weight:500}
+.nav{display:none; gap:8px; flex-wrap:wrap; justify-content:center; background:white; border-bottom:1px solid var(--line); padding:10px;}
+.nav button{border:0;background:transparent;padding:10px 16px;border-radius:12px;font:700 15px 'Tajawal';color:var(--ink);cursor:pointer; transition:0.2s;}
+.nav button.active,.nav button:hover{background:var(--pale);color:var(--teal)}
+main{max-width:1100px;margin:24px auto;padding:0 18px 50px}.screen{display:none}.screen.active{display:block; animation: fadeIn 0.4s ease;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+h1{font-size:27px;margin:0 0 6px}h2{font-size:20px;margin:0 0 14px}h3{font-size:17px;margin:0 0 8px}.lead{color:var(--muted);margin:0 0 22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 5px 20px #17324d0a}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+label{font-weight:700;display:block;margin-bottom:6px;font-size:14px}.field{margin-bottom:14px}input,textarea,select{font:16px 'Tajawal';width:100%;padding:11px 12px;border:1px solid #cbd8dc;border-radius:10px;background:#fff;color:var(--ink)}textarea{min-height:80px;resize:vertical}
+button{font-family:'Tajawal';cursor:pointer}.btn{border:0;border-radius:11px;padding:11px 17px;background:var(--teal);color:white;font-size:16px;font-weight:700;transition:0.2s}.btn:hover{background:var(--teal2)}.btn.secondary{background:#e9f2f3;color:var(--ink)}.btn.danger{background:#fff0ee;color:var(--red)}.btn.gold{background:var(--gold);color:#4a3410}.actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.note{padding:12px 15px;border-radius:12px;background:#fff7e5;color:#755515;margin:12px 0;line-height:1.6;font-size:14px}
+.patient-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.badge{background:var(--pale);color:var(--teal2);padding:7px 12px;border-radius:20px;font-weight:700}
+table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:right;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}th{color:var(--muted);font-size:14px}td input,td select{min-width:90px;padding:7px}.table-wrap{overflow:auto}.empty{color:var(--muted);text-align:center;padding:24px}
+.secret-card{margin:10px auto;max-width:460px;text-align:center;padding:25px;background:var(--pale);border:2px dashed var(--teal);border-radius:18px}.secret-label{font-weight:700;color:var(--teal2);margin-bottom:12px}.target-icon{font-size:72px}.target-message{font-size:22px;font-weight:800;margin:8px 0 18px}
+.target-img-display{width:200px; height:200px; object-fit:cover; border-radius:16px; margin:0 auto 10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+.convey-area{margin:10px auto 0;max-width:760px;text-align:center;border-top:1px solid var(--line);padding-top:18px}
+.mode-list{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:16px 0}.mode{border:1px solid var(--line);background:white;border-radius:12px;padding:12px;font:700 15px 'Tajawal';transition:0.2s}.mode.active{background:var(--pale);border-color:var(--teal);color:var(--teal2)}
+.mode-workspace{margin:16px auto;max-width:760px}.mode-panel{border:1px solid var(--line);background:#f8fbfb;border-radius:14px;padding:16px;text-align:right}.mode-panel textarea{background:white}
+/* Visual Guess */
+.visual-guess{background:#f8fbfb;border:1px dashed var(--teal);border-radius:14px;padding:15px;margin-top:14px}
+.guess-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:12px}
+.guess-card{background:#fff;border:2px solid var(--line);border-radius:13px;padding:14px;cursor:pointer;text-align:center;font:700 15px 'Tajawal';color:var(--ink);transition:0.3s;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.guess-card img{width:60px;height:60px;object-fit:cover;border-radius:8px;}
+.guess-card:hover{border-color:var(--teal);background:var(--pale)}
+.guess-card.correct{border-color:var(--success);background:#e9f7ef;box-shadow:0 0 15px var(--success)}
+.guess-card.incorrect{border-color:var(--red);background:#fff0ee}
+/* Modals */
+.session-modal{position:fixed;inset:0;z-index:1000;background:rgba(11,23,42,0.8);display:flex;align-items:center;justify-content:center;padding:18px}
+.session-modal[hidden]{display:none!important}
+.modal-card{max-width:620px;width:100%;max-height:90vh;overflow:auto;background:#fff;border-radius:20px;padding:25px;box-shadow:0 20px 60px #0004}
+.modal-card .star{text-align:center;font-size:42px}
+/* AI */
+.ai-card{border:1px solid #cfe3e2;background:linear-gradient(180deg,#fbfefe,#fff)}
+.ai-out{margin-top:16px;padding:16px;border-radius:14px;background:#fbfdfd;border:1px solid var(--line);line-height:1.95;font-size:15.5px;display:none}
+.ai-chips{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.chip{display:flex;align-items:center;justify-content:space-between;text-align:right;border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 14px;font:700 16px 'Tajawal';color:var(--ink);cursor:pointer;transition:0.2s}
+.chip:hover{border-color:var(--teal);background:var(--pale)}
+.chip-left{display:flex;align-items:center;gap:10px;}
+.chip img{width:40px;height:40px;object-fit:cover;border-radius:8px;}
+.chip-emoji{font-size:22px;flex:0 0 auto}
+.ai-spin{display:inline-block;width:14px;height:14px;border:2px solid #cbd8dc;border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px;margin-inline-end:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Recording */
+.recording-active { background-color: #fee2e2 !important; color: #b91c1c !important; border: 1px solid #f87171 !important; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+.audio-player { margin-top: 10px; width: 100%; max-width: 300px; }
+/* Welcome Screen */
+#welcome { text-align: center; padding: 40px 20px; }
+.welcome-icon { font-size: 80px; margin-bottom: 20px; text-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.welcome-title { font-size: 45px; color: var(--teal2); margin-bottom: 15px; font-weight: 900; }
+.welcome-text { font-size: 20px; color: var(--ink); max-width: 650px; margin: 0 auto 40px; line-height: 1.8; }
+.enter-btn { font-size: 22px; padding: 15px 50px; border-radius: 30px; box-shadow: 0 10px 20px rgba(8, 126, 128, 0.3); transition: transform 0.2s; }
+.enter-btn:hover { transform: scale(1.05); }
+</style>
+</head>
+<body>
+<header>
+    <div class="brand">PACE AI <small>المنصة الأرطفونية الذكية</small></div>
+    <span id="headerDynamicText" style="font-weight: bold; font-size: 18px;">مرحباً بك</span>
+</header>
+<nav class="nav" aria-label="التنقل">
+    <button data-screen="patient">واجهة الجلسة</button>
+    <button data-screen="profile">الملف الدلالي للمريض</button>
+    <button data-screen="results">التحليلات والنتائج</button>
+</nav>
+<main>
+
+<!-- 0. شاشة الترحيب -->
+<section id="welcome" class="screen active">
+    <div class="welcome-icon">🧠</div>
+    <h1 class="welcome-title">PACE AI</h1>
+    <p class="welcome-text">
+        منصة رقمية تفاعلية مدعومة بالذكاء الاصطناعي لتحويل تقنية PACE لتعزيز الفعالية التواصلية لمرضى الحبسة الكلامية. 
+        تتيح للمعالج والمريض تبادل الأدوار، واستخدام وسائل تواصل متعددة، مع تحليل وتوليد بطاقات ذكية.
+    </p>
+    <button class="btn enter-btn" onclick="showScreen('patient')">الدخول إلى المنصة 🚀</button>
+</section>
+
+<!-- 1. واجهة الجلسة -->
+<section id="patient" class="screen">
+<div class="patient-head">
+    <div>
+        <h1>جلسة PACE التفاعلية</h1>
+        <p class="lead">تبادل الأدوار، تخمين بصري، وصمام أمان للتلميحات.</p>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <select id="cardCategory" style="width:auto; padding:8px; font-weight:bold; font-size:14px;">
+            <option value="daily">احتياجات يومية</option>
+            <option value="food">طعام وشراب</option>
+            <option value="actions">أفعال وحركة</option>
+            <option value="objects">أشياء ومقتنيات</option>
+        </select>
+        <button id="nextCard" class="btn">بطاقة جديدة</button>
+        
+        <!-- زر رفع صورة جديدة للبطاقة -->
+        <input type="file" id="sessionImageUpload" accept="image/*" hidden>
+        <button id="uploadBtn" class="btn secondary" title="رفع صورة من الجهاز كبطاقة">📷 صورة من الجهاز</button>
+        
+        <button id="scaffoldBtn" class="btn secondary" title="تقديم تلميح">💡 تلميح</button>
+        <button id="endSessionBtn" class="btn secondary">إنهاء الجلسة</button>
+    </div>
+</div>
+
+<div class="card">
+  <div class="patient-head" style="margin-bottom:15px;">
+    <div>
+      <h2 id="turnTitle"></h2>
+      <p id="turnHelp" style="font-size:14px; color:var(--muted);">اعرض الشاشة للمرسل فقط.</p>
+    </div>
+  </div>
+  
+  <div id="hintMessage" style="color:var(--teal2); font-weight:bold; text-align:center; margin-bottom:10px;"></div>
+
+  <div id="secretCard" class="secret-card" hidden>
+      <div class="secret-label">للمرسل فقط — أبعد البطاقة عن نظر المستمع</div>
+      <div id="targetIcon" class="target-icon"></div>
+      <div id="targetMessage" class="target-message"></div>
+      <button id="hideCard" class="btn">أخفي وابدأ التواصل</button>
+  </div>
+
+  <div id="conveyArea" class="convey-area" hidden>
+    <h3>حان وقت إيصال الرسالة</h3>
+    <p style="font-size:14px; color:var(--muted);">يختار المريض وسيلة التواصل، ويقدم الشريك ردًا طبيعيًا.</p>
+    
+    <div class="mode-list">
+        <button class="mode" data-mode="الكلام">🗣️ كلام</button>
+        <button class="mode" data-mode="الإشارة">🤲 إشارة</button>
+        <button class="mode" data-mode="الرسم">✏️ رسم</button>
+        <button class="mode" data-mode="الكتابة">📝 كتابة</button>
+        <button class="mode" data-mode="رموز / أخرى">🧩 رموز</button>
+    </div>
+    
+    <div id="selectedMode" class="badge">اختر وسيلة التواصل المستخدمة</div>
+    <div id="modeWorkspace" class="mode-workspace"></div>
+    
+    <button id="showGuessButton" class="btn secondary" type="button" style="margin-top:15px;">🧩 أظهر خيارات الفهم للمستمع</button>
+    
+    <div id="visualGuessArea" class="visual-guess" hidden>
+        <h3>ما الذي فهمه المستمع؟</h3>
+        <div id="guessGrid" class="guess-grid"></div>
+        <div id="guessFeedback" style="margin-top:10px; font-weight:bold;"></div>
+    </div>
+
+    <div class="grid" style="margin-top:20px; text-align:right;">
+        <div class="field"><label for="paceRating">تقييم المختص لمدى إيصال الرسالة</label>
+            <select id="paceRating"><option value="">اختر الدرجة</option><option value="5">5 — وصلت من المحاولة الأولى</option><option value="4">4 — وصلت بعد تلميح</option><option value="3">3 — وصلت جزئيًا</option><option value="1">1 — لم تصل</option></select>
+        </div>
+        <div class="field"><label for="paceNote">ملاحظة المختص (سلوك تعويضي)</label>
+            <input id="paceNote" placeholder="مثال: انتقل من النطق للرسم تلقائياً">
+        </div>
+    </div>
+    <button id="saveTurn" class="btn" style="width:100%;">حفظ المحاولة وتبديل الدور</button>
+  </div>
+</div>
+
+<div class="card">
+    <h2>سجل تبادل الرسائل (الجلسة الحالية)</h2>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>المرسل</th><th>البطاقة</th><th>الوسيلة</th><th>الاستجابة</th><th>فهم المستمع</th><th>التقييم</th></tr></thead>
+            <tbody id="paceLog"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- المساعد الذكي -->
+<div class="card ai-card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0;">المساعد الذكي <span style="background:var(--gold); color:#4a3410; font-size:12px; padding:3px 9px; border-radius:20px;">نسخة محلية</span></h2>
+        <button id="aiToggle" class="btn secondary" type="button">إعدادات الاتصال</button>
+    </div>
+    <div id="aiSettings" style="margin-top:14px; padding:14px; border:1px dashed var(--line); border-radius:12px; background:#fafcfc;" hidden>
+        <div class="grid">
+            <div class="field"><label>عنوان الخادم المحلي (LM Studio)</label><input id="aiBase" placeholder="http://127.0.0.1:1234/v1"></div>
+            <div class="field"><label>اسم النموذج</label><input id="aiModel" placeholder="qwen2.5-7b-instruct"></div>
+        </div>
+        <button id="aiTest" class="btn secondary" type="button">اختبار الاتصال</button>
+        <span id="aiStatus" style="margin-right:10px; font-weight:bold;"></span>
+    </div>
+    <div class="actions" style="margin-top:16px">
+        <button id="aiCards" class="btn" type="button">✨ اقترح بطاقات جديدة</button>
+        <button id="aiReport" class="btn secondary" type="button">📋 اكتب تقرير الجلسة</button>
+        <button id="aiAnalyze" class="btn secondary" type="button">🧠 حلل النتائج واقترح تمارين</button>
+        <button id="aiStop" class="btn danger" type="button" hidden>إيقاف</button>
+    </div>
+    <div id="aiOut" class="ai-out"></div>
+</div>
+</section>
+
+<!-- 2. الملف الدلالي للمريض -->
+<section id="profile" class="screen">
+<h1>ملف المريض الدلالي</h1>
+<p class="lead">الاسترجاع الدلالي المبني على الهوية والمهنة يقلل الحمل المعرفي ويزيد الدافعية.</p>
+<form id="profileForm" class="card">
+<div class="grid three">
+<div class="field"><label>الاسم</label><input id="firstName" placeholder="عمار"></div>
+<div class="field"><label>اللقب</label><input id="lastName" placeholder="بلحاج"></div>
+<div class="field"><label>العمر</label><input id="age" type="number" placeholder="62"></div>
+</div>
+<div class="grid">
+<div class="field"><label>المهنة السابقة / الحالية</label><input id="profession" placeholder="نجار / مهندس / ربة منزل"></div>
+<div class="field"><label>الاهتمامات (لتوليد البطاقات)</label><input id="interests" placeholder="الحدائق، كرة القدم، الطبخ"></div>
+</div>
+<div class="field"><label>تاريخ الحالة والملاحظات</label><textarea id="history" placeholder="حبسة بروكا بعد جلطة..."></textarea></div>
+<div class="actions"><button class="btn" type="submit">حفظ الملف</button><span id="profileStatus" style="color:var(--success); font-weight:bold;"></span></div>
+</form>
+</section>
+
+<!-- 3. لوحة التحليلات والنتائج -->
+<section id="results" class="screen">
+<h1>لوحة النتائج اليدوية</h1>
+<div class="card">
+<h2>إضافة نتيجة</h2>
+<form id="resultForm">
+<div class="grid three">
+<div class="field"><label>التمرين</label><select id="resultExercise"><option>تمييز الصور</option><option>تكوين جملة</option><option>ارسم المطلوب</option><option>تمرين آخر</option></select></div>
+<div class="field"><label>عدد المحاولات</label><input id="attempts" type="number" min="1" required placeholder="مثال: 10"></div>
+<div class="field"><label>المحاولات الصحيحة</label><input id="correct" type="number" min="0" required placeholder="مثال: 7"></div>
+</div>
+<div class="grid">
+<div class="field"><label>تاريخ الجلسة</label><input id="resultDate" type="date" required></div>
+<div class="field"><label>ملاحظات</label><input id="resultNote" placeholder="اختياري"></div>
+</div>
+<div class="actions"><button class="btn" type="submit">إضافة النتيجة</button></div>
+</form>
+</div>
+<div class="card">
+<h2>ملخص النتائج</h2>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; text-align:center;">
+<div style="background:var(--pale); padding:15px; border-radius:14px;">معدل النجاح<strong id="avgPercent" style="display:block; font-size:28px; color:var(--teal2);">—</strong></div>
+<div style="background:var(--pale); padding:15px; border-radius:14px;">المحاولات الصحيحة<strong id="sumCorrect" style="display:block; font-size:28px; color:var(--teal2);">0</strong></div>
+<div style="background:var(--pale); padding:15px; border-radius:14px;">عدد الجلسات<strong id="sessionCount" style="display:block; font-size:28px; color:var(--teal2);">0</strong></div>
+</div>
+</div>
+<div class="card">
+<h2>سجل النتائج</h2>
+<div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>التمرين</th><th>المحاولات</th><th>الصحيحة</th><th>النسبة</th><th>إجراء</th></tr></thead><tbody id="resultsBody"></tbody></table></div>
+</div>
+
+<div class="card">
+    <h2>نتائج جلسات PACE المحفوظة</h2>
+    <div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>نوع النتيجة</th><th>التفاصيل</th><th>النتيجة</th><th>ملاحظات</th></tr></thead><tbody id="profileRecords"></tbody></table></div>
+</div>
+</section>
+</main>
+
+<!-- نافذة تدقيق المعالج -->
+<div id="sessionAuditModal" class="session-modal" hidden>
+  <div class="modal-card">
+    <div class="star">🌟</div>
+    <h2 style="text-align:center;">ملخص جلسة المريض</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; text-align:center;">
+        <div style="background:var(--pale); padding:15px; border-radius:14px;">التبادلات<strong id="auditTotal" style="display:block; font-size:24px; color:var(--teal2);">0</strong></div>
+        <div style="background:var(--pale); padding:15px; border-radius:14px;">متوسط التقييم<strong id="auditAverage" style="display:block; font-size:24px; color:var(--teal2);">—</strong></div>
+    </div>
+    <p><strong>وسائل التواصل:</strong> <span id="auditModes">—</span></p>
+    <div class="field"><label>ملاحظات المختص عن الجلسة</label><textarea id="auditNotes" placeholder="ملاحظات نوعية..."></textarea></div>
+    <div class="actions">
+        <button id="saveSession" class="btn" type="button">حفظ الملخص</button>
+        <button id="cancelSession" class="btn secondary" type="button">عودة للجلسة</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==========================================
+// 1. التخزين والبيانات الأساسية
+// ==========================================
+const STORAGE = { profile: 'pace_profile_v6', results: 'pace_manual_results_v6', turns: 'pace_turns_v6', sessions: 'pace_sessions_v6', ai: 'pace_ai_cfg_v6' };
+const read = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) || fb } catch { return fb } };
+
+let profile = read(STORAGE.profile, { firstName:'', lastName:'', age:'', profession:'', interests:'', history:'' });
+let results = read(STORAGE.results, []);
+let paceTurns = read(STORAGE.turns, []);
+let sessionRecords = read(STORAGE.sessions, []);
+let aiCfg = read(STORAGE.ai, { base:'http://127.0.0.1:1234/v1', model:'qwen2.5-7b-instruct' });
+
+const save = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+
+// ==========================================
+// 2. التنقل وتحديث الشريط الأزرق
+// ==========================================
+const screenTitles = {
+    'welcome': 'مرحباً بك',
+    'patient': 'واجهة الجلسة',
+    'profile': 'الملف الدلالي للمريض',
+    'results': 'التحليلات والنتائج'
+};
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+    
+    const nav = document.querySelector('.nav');
+    if (id === 'welcome') {
+        nav.style.display = 'none';
+    } else {
+        nav.style.display = 'flex';
+        document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.screen === id));
+    }
+    
+    document.getElementById('headerDynamicText').textContent = screenTitles[id] || '';
+    
+    if(id === 'results') { renderResults(); renderProfileRecords(); }
+}
+document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => showScreen(b.dataset.screen)));
+
+// ==========================================
+// 3. الملف الشخصي
+// ==========================================
+for(const key of ['firstName', 'lastName', 'age', 'profession', 'interests', 'history']) {
+    document.getElementById(key).value = profile[key] || '';
+}
+
+document.getElementById('profileForm').addEventListener('submit', e => {
+    e.preventDefault();
+    profile.firstName = document.getElementById('firstName').value.trim();
+    profile.lastName = document.getElementById('lastName').value.trim();
+    profile.age = document.getElementById('age').value;
+    profile.profession = document.getElementById('profession').value.trim();
+    profile.interests = document.getElementById('interests').value.trim();
+    profile.history = document.getElementById('history').value.trim();
+
+    save(STORAGE.profile, profile);
+    document.getElementById('profileStatus').textContent = 'تم الحفظ بنجاح!';
+    setTimeout(() => document.getElementById('profileStatus').textContent = '', 3000);
+});
+
+// ==========================================
+// 4. مكتبة البطاقات
+// ==========================================
+const cardPacks = {
+  daily: [['🥤','اطلب ماءً'], ['📞','أريد مكالمة'], ['🚪','افتح الباب'], ['💊','أحتاج دوائي'], ['🆘','أحتاج مساعدة'], ['🚻','أريد الحمام'], ['🛌','أريد النوم'], ['🧥','أشعر بالبرد']],
+  food: [['🍎','اطلب تفاحة'], ['☕','اطلب قهوة'], ['🍞','اطلب خبز'], ['💧','اطلب ماء بارد'], ['🍲','اطلب الغداء'], ['🍌','اطلب موزة'], ['🥛','اطلب حليب'], ['🍰','اطلب حلوى']],
+  actions: [['🚶','أريد المشي'], ['🏃','أريد الجري'], ['🛒','أريد التسوق'], ['🚌','أريد الحافلة'], ['📖','اطلب كتاب'], ['🎵','شغل الموسيقى'], ['📺','شغل التلفاز'], ['⚽','أريد اللعب']],
+  objects: [['📱','اطلب الهاتف'], ['👓','اطلب النظارة'], ['🔑','اطلب المفاتيح'], ['👜','اطلب الحقيبة'], ['💼','اطلب المحفظة'], ['⌚','اطلب الساعة'], ['👟','اطلب الحذاء'], ['💻','اطلب الكمبيوتر']]
+};
+
+// ==========================================
+// 5. محرك الجلسة
+// ==========================================
+let turnNumber = 0, currentCard = null, selectedMode = '', responseValue = '', responseArtifact = '', responseArtifactType = '', listenerGuess = '', currentHint = '';
+let activeSessionId = 'sess_' + Date.now();
+
+function showTurn() {
+    const isPatient = turnNumber % 2 === 0;
+    const name = profile.firstName || 'المريض';
+    document.getElementById('turnTitle').textContent = isPatient ? `دور المريض (${name}): الإرسال` : 'دور المعالج / الذكاء: الإرسال';
+}
+
+function drawCard(customCard = null) {
+    if (customCard) {
+        currentCard = customCard;
+    } else {
+        const category = document.getElementById('cardCategory').value;
+        const pack = cardPacks[category] || cardPacks.daily;
+        let c = pack[Math.floor(Math.random() * pack.length)];
+        if(pack.length > 1) while(c === currentCard) c = pack[Math.floor(Math.random() * pack.length)];
+        currentCard = [c[0], c[1], null]; // [emoji, text, imageBase64]
+    }
+
+    const icon = document.getElementById('targetIcon');
+    icon.replaceChildren();
+    if(currentCard[2]) {
+        const img = document.createElement('img');
+        img.src = currentCard[2];
+        img.className = 'target-img-display';
+        icon.append(img);
+    } else {
+        icon.textContent = currentCard[0];
+    }
+    document.getElementById('targetMessage').textContent = currentCard[1];
+
+    // تصفير الحالة
+    document.getElementById('secretCard').hidden = false;
+    document.getElementById('conveyArea').hidden = true;
+    document.getElementById('visualGuessArea').hidden = true;
+    document.getElementById('hintMessage').textContent = '';
+    document.getElementById('modeWorkspace').replaceChildren();
+    document.getElementById('paceRating').value = '';
+    document.getElementById('paceNote').value = '';
+    
+    selectedMode = ''; responseValue = ''; responseArtifact = ''; responseArtifactType = ''; listenerGuess = ''; currentHint = '';
+    document.querySelectorAll('.mode').forEach(b => b.classList.remove('active'));
+    document.getElementById('selectedMode').textContent = 'اختر وسيلة التواصل المستخدمة';
+}
+
+document.getElementById('nextCard').onclick = () => drawCard();
+document.getElementById('cardCategory').onchange = () => drawCard();
+document.getElementById('hideCard').onclick = () => {
+    document.getElementById('secretCard').hidden = true;
+    document.getElementById('conveyArea').hidden = false;
+};
+
+// رفع صورة كبطاقة من الجهاز
+document.getElementById('uploadBtn').onclick = () => document.getElementById('sessionImageUpload').click();
+document.getElementById('sessionImageUpload').onchange = (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const scale = Math.min(1, 800 / Math.max(img.width, img.height));
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            const base64 = canvas.toDataURL('image/jpeg', 0.8);
+            
+            const customText = prompt("ماذا تريد أن يعبر عنه المريض في هذه الصورة؟", "أوصل فكرة عن هذه الصورة");
+            if(customText !== null) {
+                drawCard(['🖼️', customText, base64]);
+            }
+        };
+        img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = ''; 
+};
+
+// صمام الأمان (Scaffolding)
+document.getElementById('scaffoldBtn').onclick = () => {
+    const hints = [
+        "تلميح عام: خذ وقتك واستخدم أي وسيلة تواصل.",
+        "تلميح محدد: جرّب الإشارة أو الرسم أو الكتابة.",
+        "تلميح صوتي: حاول نطق الحرف الأول من الكلمة."
+    ];
+    currentHint = hints[Math.floor(Math.random() * hints.length)];
+    document.getElementById('hintMessage').textContent = currentHint + ' (لا يخصم نقاط)';
+};
+
+// ==========================================
+// 6. قنوات التواصل
+// ==========================================
+function renderMode(mode) {
+    const workspace = document.getElementById('modeWorkspace');
+    workspace.replaceChildren();
+    responseValue = ''; responseArtifact = ''; responseArtifactType = '';
+    document.getElementById('visualGuessArea').hidden = true;
+
+    const panel = document.createElement('div');
+    panel.className = 'mode-panel';
+
+    if(mode === 'الكلام') {
+        panel.innerHTML = '<p class="mode-help">سجل صوت المريض لسماعه لاحقاً، أو دوّن ما قاله.</p>';
+        const t = document.createElement('textarea');
+        t.placeholder = 'اكتب ما قاله المريض (اختياري)...';
+        t.oninput = () => responseValue = t.value.trim();
+        panel.append(t);
+        
+        const row = document.createElement('div'); row.className = 'actions';
+        const btn = document.createElement('button'); btn.type='button'; btn.className='btn secondary'; btn.textContent='🔴 تسجيل صوت المريض';
+        const status = document.createElement('span'); status.style.fontSize = '13px'; status.style.color = 'var(--muted)';
+        const audio = document.createElement('audio'); audio.controls = true; audio.hidden = true; audio.className = 'audio-player';
+        
+        let mediaRecorder, chunks = [];
+        btn.onclick = async () => {
+            if(mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop(); btn.textContent = '🔴 إعادة التسجيل'; btn.classList.remove('recording-active'); status.textContent = 'تم حفظ التسجيل.';
+                return;
+            }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream); chunks = [];
+                mediaRecorder.ondataavailable = e => { if(e.data.size) chunks.push(e.data); };
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onloadend = () => { responseArtifact = reader.result; responseArtifactType = 'audio'; responseValue = responseValue || 'تسجيل صوتي'; };
+                    audio.src = URL.createObjectURL(blob); audio.hidden = false;
+                    stream.getTracks().forEach(t => t.stop());
+                };
+                mediaRecorder.start(); btn.textContent = '⏹️ إيقاف التسجيل'; btn.classList.add('recording-active'); status.textContent = 'جاري التسجيل...';
+            } catch { alert('تعذر الوصول للميكروفون. تأكد من رفع الملف على سيرفر (https) وإعطاء الإذن.'); }
+        };
+        row.append(btn, status);
+        panel.append(row, audio);
+        workspace.append(panel);
+    }
+    else if(mode === 'الإشارة') {
+        panel.innerHTML = '<p class="mode-help">اختر الإشارة التي لاحظتها:</p>';
+        const grid = document.createElement('div'); grid.className = 'gesture-grid';
+        [['☝️','أشار لشيء'],['👍','موافقة'],['👎','رفض'],['🤲','أخرى']].forEach(([i,l]) => {
+            const b = document.createElement('button'); b.className = 'gesture-option'; b.textContent = `${i} ${l}`; b.type = 'button';
+            b.onclick = () => { grid.querySelectorAll('button').forEach(x => x.classList.remove('active')); b.classList.add('active'); responseValue = l; };
+            grid.append(b);
+        });
+        panel.append(grid); workspace.append(panel);
+    }
+    else if(mode === 'الرسم') {
+        panel.innerHTML = '<p class="mode-help">ارسم باللمس. عند الانتهاء اضغط "أظهر خيارات الفهم".</p>';
+        const canvas = document.createElement('canvas'); canvas.width = 500; canvas.height = 200;
+        canvas.style = 'background:white; border:2px solid var(--line); border-radius:10px; touch-action:none; max-width:100%; display:block; margin:auto;';
+        const ctx = canvas.getContext('2d'); ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.strokeStyle = '#087e80';
+        let down = false;
+        canvas.onpointerdown = e => { down = true; const r = canvas.getBoundingClientRect(); ctx.beginPath(); ctx.moveTo(e.clientX - r.left, e.clientY - r.top); };
+        canvas.onpointermove = e => { if(!down) return; const r = canvas.getBoundingClientRect(); ctx.lineTo(e.clientX - r.left, e.clientY - r.top); ctx.stroke(); };
+        canvas.onpointerup = () => { down = false; responseValue = 'رسم'; responseArtifact = canvas.toDataURL('image/jpeg', 0.6); responseArtifactType = 'image'; };
+        panel.append(canvas); workspace.append(panel);
+    }
+    else if(mode === 'الكتابة') {
+        const t = document.createElement('textarea'); t.placeholder = 'اكتب هنا...'; t.oninput = () => responseValue = t.value;
+        panel.append(t); workspace.append(panel);
+    }
+    else {
+        panel.innerHTML = '<p class="mode-help">اختر الرموز:</p>';
+        const board = document.createElement('div'); board.className = 'symbol-board'; let chosen = [];
+        [['💧','ماء'],['🍽️','أكل'],['🚻','حمام'],['🆘','مساعدة']].forEach(([i,w]) => {
+            const b = document.createElement('button'); b.type='button'; b.className = 'symbol-option'; b.textContent = `${i} ${w}`;
+            b.onclick = () => { if(!chosen.includes(w)) chosen.push(w); responseValue = chosen.join(' '); b.classList.add('active'); };
+            board.append(b);
+        });
+        panel.append(board); workspace.append(panel);
+    }
+}
+
+document.querySelectorAll('.mode').forEach(b => b.onclick = () => {
+    selectedMode = b.dataset.mode;
+    document.querySelectorAll('.mode').forEach(x => x.classList.toggle('active', x === b));
+    document.getElementById('selectedMode').textContent = 'الوسيلة المسجلة: ' + selectedMode;
+    renderMode(selectedMode);
+});
+
+// ==========================================
+// 7. التخمين البصري (Visual Guess)
+// ==========================================
+document.getElementById('showGuessButton').onclick = () => {
+    const area = document.getElementById('visualGuessArea');
+    const grid = document.getElementById('guessGrid');
+    const feedback = document.getElementById('guessFeedback');
+    grid.replaceChildren(); feedback.textContent = '';
+    area.hidden = false;
+
+    const allCards = Object.values(cardPacks).flat();
+    const options = [currentCard];
+    while(options.length < 3) {
+        const c = allCards[Math.floor(Math.random() * allCards.length)];
+        if(!options.some(x => x[1] === c[1])) options.push([c[0], c[1], null]);
+    }
+    options.sort(() => Math.random() - 0.5);
+
+    options.forEach(c => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'guess-card'; 
+        
+        if(c[2]) {
+            const img = document.createElement('img'); img.src = c[2]; b.append(img);
+        } else {
+            const iconSpan = document.createElement('span'); iconSpan.style.fontSize = '30px'; iconSpan.textContent = c[0]; b.append(iconSpan);
+        }
+        const textSpan = document.createElement('span'); textSpan.textContent = c[1]; b.append(textSpan);
+
+        b.onclick = () => {
+            listenerGuess = c[1];
+            grid.querySelectorAll('button').forEach(x => x.classList.remove('correct', 'incorrect'));
+            if(c[1] === currentCard[1]) {
+                b.classList.add('correct');
+                feedback.textContent = 'نجاح! اختيار المستمع يطابق البطاقة.';
+                feedback.style.color = 'var(--success)';
+                try { const actx = new (window.AudioContext || window.webkitAudioContext)(); const osc = actx.createOscillator(); osc.frequency.value = 800; osc.connect(actx.destination); osc.start(); osc.stop(actx.currentTime + 0.15); } catch(e){}
+            } else {
+                b.classList.add('incorrect');
+                feedback.textContent = 'اختار المستمع رسالة أخرى.';
+                feedback.style.color = 'var(--red)';
+            }
+        };
+        grid.append(b);
+    });
+};
+
+// ==========================================
+// 8. الحفظ والسجلات
+// ==========================================
+document.getElementById('saveTurn').onclick = () => {
+    const rating = document.getElementById('paceRating').value;
+    if(rating === '') return alert('اختر تقييم المختص قبل الحفظ.');
+    if(!selectedMode) return alert('اختر وسيلة التواصل أولاً.');
+
+    paceTurns.unshift({
+        date: new Date().toLocaleDateString('sv-SE'),
+        sessionId: activeSessionId,
+        sender: turnNumber % 2 === 0 ? (profile.firstName || 'المريض') : 'المختص',
+        message: currentCard[1],
+        image: currentCard[2] || null, 
+        mode: selectedMode,
+        response: responseValue || 'لم تدون',
+        artifact: responseArtifact,
+        artifactType: responseArtifactType,
+        listenerGuess: listenerGuess,
+        hint: currentHint,
+        rating: rating,
+        note: document.getElementById('paceNote').value.trim()
+    });
+    save(STORAGE.turns, paceTurns);
+    
+    turnNumber++;
+    showTurn();
+    renderPaceLog();
+    drawCard();
+};
+
+function renderPaceLog() {
+    const body = document.getElementById('paceLog');
+    body.replaceChildren();
+    const currentSession = paceTurns.filter(r => r.sessionId === activeSessionId);
+    currentSession.forEach(r => {
+        const tr = document.createElement('tr');
+        
+        const cardTd = document.createElement('td');
+        if(r.image) {
+            const img = document.createElement('img'); img.src = r.image; img.style = 'width:30px;height:30px;border-radius:5px;vertical-align:middle;margin-left:5px;';
+            cardTd.append(img, document.createTextNode(r.message));
+        } else {
+            cardTd.textContent = r.message;
+        }
+
+        [r.sender, r.mode, r.response, r.listenerGuess || '—', r.rating + '/5'].forEach(v => {
+            const td = document.createElement('td'); td.textContent = v; tr.append(td);
+        });
+        tr.prepend(cardTd);
+        body.append(tr);
+    });
+}
+
+// نهاية الجلسة
+document.getElementById('endSessionBtn').onclick = () => {
+    const current = paceTurns.filter(r => r.sessionId === activeSessionId);
+    const scores = current.map(r => Number(r.rating) || 0).filter(n => n > 0);
+    document.getElementById('auditTotal').textContent = current.length;
+    document.getElementById('auditAverage').textContent = scores.length ? (scores.reduce((a,b) => a+b, 0) / scores.length).toFixed(1) + '/5' : '—';
+    document.getElementById('auditModes').textContent = [...new Set(current.map(r => r.mode).filter(Boolean))].join('، ') || '—';
+    document.getElementById('auditNotes').value = '';
+    document.getElementById('sessionAuditModal').hidden = false;
+};
+
+document.getElementById('cancelSession').onclick = () => document.getElementById('sessionAuditModal').hidden = true;
+
+document.getElementById('saveSession').onclick = () => {
+    const current = paceTurns.filter(r => r.sessionId === activeSessionId);
+    const scores = current.map(r => Number(r.rating) || 0).filter(n => n > 0);
+    sessionRecords.unshift({
+        date: new Date().toLocaleDateString('sv-SE'),
+        total: current.length,
+        average: scores.length ? (scores.reduce((a,b) => a+b, 0) / scores.length).toFixed(1) : '—',
+        modes: [...new Set(current.map(r => r.mode).filter(Boolean))].join('، '),
+        notes: document.getElementById('auditNotes').value.trim()
+    });
+    save(STORAGE.sessions, sessionRecords);
+    document.getElementById('sessionAuditModal').hidden = true;
+    activeSessionId = 'sess_' + Date.now(); 
+    renderProfileRecords();
+    alert('تم حفظ ملخص الجلسة بنجاح!');
+};
+
+// ==========================================
+// 9. النتائج اليدوية والملف الشخصي
+// ==========================================
+document.getElementById('resultForm').onsubmit = (e) => {
+    e.preventDefault();
+    results.unshift({
+        date: document.getElementById('resultDate').value,
+        exercise: document.getElementById('resultExercise').value,
+        attempts: Number(document.getElementById('attempts').value),
+        correct: Number(document.getElementById('correct').value),
+        note: document.getElementById('resultNote').value.trim()
+    });
+    save(STORAGE.results, results);
+    renderResults();
+    e.target.reset();
+    document.getElementById('resultDate').value = new Date().toISOString().slice(0,10);
+};
+
+function renderResults() {
+    const body = document.getElementById('resultsBody');
+    body.replaceChildren();
+    let totalA = 0, totalC = 0;
+    results.forEach((r, idx) => {
+        totalA += r.attempts; totalC += r.correct;
+        const tr = document.createElement('tr');
+        [r.date, r.exercise, r.attempts, r.correct, Math.round((r.correct/r.attempts)*100) + '%'].forEach(v => {
+            const td = document.createElement('td'); td.textContent = v; tr.append(td);
+        });
+        const del = document.createElement('button'); del.className = 'btn danger'; del.textContent = 'حذف';
+        del.onclick = () => { results.splice(idx, 1); save(STORAGE.results, results); renderResults(); };
+        const td = document.createElement('td'); td.append(del); tr.append(td);
+        body.append(tr);
+    });
+    document.getElementById('avgPercent').textContent = totalA ? Math.round((totalC/totalA)*100) + '%' : '—';
+    document.getElementById('sumCorrect').textContent = totalC;
+    document.getElementById('sessionCount').textContent = results.length;
+}
+
+function renderProfileRecords() {
+    const body = document.getElementById('profileRecords');
+    body.replaceChildren();
+    const all = [];
+    
+    paceTurns.forEach(r => all.push({
+        date: r.date, type: 'محاولة PACE (' + r.mode + ')', 
+        detail: r.message + (r.response ? ' | استجابة: ' + r.response : ''), 
+        score: 'تقييم: ' + r.rating + '/5', note: r.hint || r.note || '', 
+        artifact: r.artifact, artifactType: r.artifactType, image: r.image
+    }));
+    
+    sessionRecords.forEach(s => all.push({
+        date: s.date, type: 'ملخص جلسة', 
+        detail: s.total + ' تبادل', score: 'متوسط: ' + s.average + '/5', note: s.notes
+    }));
+
+    all.sort((a,b) => String(b.date).localeCompare(String(a.date)));
+
+    all.forEach(r => {
+        const tr = document.createElement('tr');
+        [r.date, r.type, r.detail, r.score, r.note].forEach((v, i) => {
+            const td = document.createElement('td'); td.textContent = v; tr.append(td);
+        });
+        
+        if(r.image) {
+            const img = document.createElement('img'); img.src = r.image; img.style = 'max-width:50px; max-height:50px; border-radius:5px; display:block; margin-top:5px;';
+            tr.children[2].append(img);
+        }
+
+        if(r.artifact) {
+            const td = tr.children[2];
+            if(r.artifactType === 'audio') {
+                const au = document.createElement('audio'); au.controls = true; au.src = r.artifact; au.style = 'max-width:200px; display:block; margin-top:5px;';
+                td.append(au);
+            } else {
+                const img = document.createElement('img'); img.src = r.artifact; img.style = 'max-width:100px; display:block; margin-top:5px; border-radius:5px;';
+                td.append(img);
+            }
+        }
+        body.append(tr);
+    });
+}
+
+// ==========================================
+// 10. المساعد الذكي (LM Studio و Pollinations للصور)
+// ==========================================
+document.getElementById('aiBase').value = aiCfg.base;
+document.getElementById('aiModel').value = aiCfg.model;
+
+document.getElementById('aiToggle').onclick = () => {
+    const box = document.getElementById('aiSettings');
+    box.hidden = !box.hidden;
+};
+
+document.getElementById('aiBase').onchange = document.getElementById('aiModel').onchange = () => {
+    aiCfg.base = document.getElementById('aiBase').value.trim();
+    aiCfg.model = document.getElementById('aiModel').value.trim();
+    save(STORAGE.ai, aiCfg);
+};
+
+document.getElementById('aiTest').onclick = async () => {
+    const status = document.getElementById('aiStatus');
+    status.textContent = 'جاري الاختبار...'; status.style.color = 'var(--ink)';
+    try {
+        const res = await fetch(aiCfg.base + '/models', { signal: AbortSignal.timeout(5000) });
+        if(!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        status.textContent = 'متصل ✓ النماذج: ' + data.data.map(m => m.id).join(', ');
+        status.style.color = 'var(--success)';
+    } catch(e) {
+        status.textContent = 'فشل الاتصال. تأكد من تشغيل LM Studio وتفعيل CORS.';
+        status.style.color = 'var(--red)';
+    }
+};
+
+async function callAI(prompt, systemMsg) {
+    const res = await fetch(aiCfg.base + '/chat/completions', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            model: aiCfg.model,
+            messages: [ { role: 'system', content: systemMsg }, { role: 'user', content: prompt } ],
+            temperature: 0.4, max_tokens: 800
+        })
+    });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    return data.choices[0].message.content;
+}
+
+document.getElementById('aiReport').onclick = async () => {
+    const out = document.getElementById('aiOut');
+    out.style.display = 'block'; out.textContent = '⏳ جاري كتابة التقرير...';
+    const context = `المريض: ${profile.firstName}، العمر: ${profile.age}، المهنة: ${profile.profession}. المحاولات: ${JSON.stringify(paceTurns.slice(0,5))}`;
+    try {
+        const text = await callAI(context, 'أنت أرطفوني خبير. اكتب تقريراً موجزاً للجلسة (نقاط قوة، تحديات، توصيات). بالعربية.');
+        out.textContent = text;
+    } catch(e) { out.textContent = 'خطأ: ' + e.message; }
+};
+
+document.getElementById('aiCards').onclick = async () => {
+    const out = document.getElementById('aiOut');
+    out.style.display = 'block'; out.textContent = '⏳ جاري اقتراح بطاقات...';
+    try {
+        const text = await callAI(`اقترح 3 بطاقات PACE للموضوع: ${document.getElementById('cardCategory').selectedOptions[0].text}. المريض يحب: ${profile.interests}.`, 'أعد النتيجة كـ JSON: [{"emoji":"☕", "text":"اطلب قهوة"}] فقط.');
+        const arr = JSON.parse(text.match(/\[.*\]/s)[0]);
+        out.replaceChildren();
+        
+        const title = document.createElement('p'); title.textContent = 'البطاقات المقترحة (اضغط للاستخدام، أو اضغط 🖼️ لتوليد صورة):'; out.append(title);
+        const wrap = document.createElement('div'); wrap.className = 'ai-chips';
+        
+        arr.forEach(c => {
+            const b = document.createElement('div'); b.className = 'chip';
+            
+            const left = document.createElement('div'); left.className = 'chip-left';
+            const em = document.createElement('span'); em.className = 'chip-emoji'; em.textContent = c.emoji;
+            const tx = document.createElement('span'); tx.textContent = c.text;
+            left.append(em, tx);
+            
+            const right = document.createElement('div'); right.style.display = 'flex'; right.style.gap = '5px';
+            
+            const useBtn = document.createElement('button'); useBtn.className = 'btn secondary'; useBtn.style.padding = '5px 10px'; useBtn.style.fontSize = '12px'; useBtn.textContent = 'استخدام';
+            useBtn.onclick = () => { drawCard([c.emoji, c.text, null]); window.scrollTo(0,0); };
+            
+            const imgBtn = document.createElement('button'); imgBtn.className = 'btn gold'; imgBtn.style.padding = '5px 10px'; imgBtn.style.fontSize = '12px'; imgBtn.textContent = '🖼️ توليد صورة';
+            imgBtn.onclick = async () => {
+                imgBtn.textContent = '⏳ جاري الرسم...';
+                imgBtn.disabled = true;
+                try {
+                    const promptText = encodeURIComponent(`A simple clear illustration of ${c.text}, flat vector style, white background, educational card for aphasia therapy`);
+                    const imgUrl = `https://image.pollinations.ai/prompt/${promptText}?width=400&height=400&nologo=true`;
+                    
+                    c.image = imgUrl;
+                    
+                    em.textContent = '';
+                    const miniImg = document.createElement('img'); miniImg.src = imgUrl; em.append(miniImg);
+                    
+                    useBtn.onclick = () => { drawCard([c.emoji, c.text, c.image]); window.scrollTo(0,0); };
+                    
+                    imgBtn.textContent = 'تم التوليد ✓';
+                } catch(e) {
+                    imgBtn.textContent = 'فشل التوليد';
+                }
+            };
+            
+            right.append(useBtn, imgBtn);
+            b.append(left, right);
+            wrap.append(b);
+        });
+        out.append(wrap);
+    } catch(e) { out.textContent = 'خطأ في قراءة النتيجة: ' + e.message; }
+};
+
+document.getElementById('aiAnalyze').onclick = async () => {
+    const out = document.getElementById('aiOut');
+    out.style.display = 'block'; out.textContent = '⏳ جاري التحليل...';
+    const context = `الملف: ${JSON.stringify(profile)}. النتائج: ${JSON.stringify(results)}. المحاولات: ${JSON.stringify(paceTurns.slice(0,5))}`;
+    try {
+        const text = await callAI(context, 'أنت مساعد أرطفوني. حلل النتائج واقترح خطة للجلسة القادمة. بالعربية.');
+        out.textContent = text;
+    } catch(e) { out.textContent = 'خطأ: ' + e.message; }
+};
+
+// التهيئة الأولية
+document.getElementById('resultDate').value = new Date().toISOString().slice(0,10);
+showTurn();
+renderPaceLog();
+renderResults();
+renderProfileRecords();
+drawCard();
+showScreen('welcome'); // البدء بشاشة الترحيب
+</script>
+</body>
+</html>
